@@ -48,6 +48,12 @@ public:
   unsigned short getNetworkPort() const;
   bool         getNetworkDebug() const;
 
+  // The Telegram Bot Section
+  bool         getTelegramBotEnable() const;
+  bool         getTelegramBotHTMLEnable() const;
+  std::string  getTelegramBotAPIToken() const;
+  std::string  getTelegramBotChannelId() const;
+
 private:
   std::string  m_file;
   bool         m_daemon;
@@ -63,6 +69,11 @@ private:
 
   unsigned short m_networkPort;
   bool         m_networkDebug;
+
+  bool		m_TelegramBotEnable;
+  bool 		m_TelegramBotHTMLEnable;
+  std::string   m_TelegramBotAPIToken;
+  std::string   m_TelegramBotChannelId;
 };
 
 #endif

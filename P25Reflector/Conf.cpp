@@ -31,7 +31,8 @@ enum SECTION {
   SECTION_GENERAL,
   SECTION_ID_LOOKUP,
   SECTION_LOG,
-  SECTION_NETWORK
+  SECTION_NETWORK,
+  SECTION_TELEGRAM
 };
 
 CConf::CConf(const std::string& file) :
@@ -45,7 +46,12 @@ m_logFilePath(),
 m_logFileRoot(),
 m_logFileRotate(true),
 m_networkPort(0U),
-m_networkDebug(false)
+m_networkDebug(false),
+m_TelegramBotEnable(false),
+m_TelegramBotHTMLEnable(false),
+m_TelegramBotAPIToken(),
+m_TelegramBotChannelId()
+
 {
 }
 
@@ -77,6 +83,8 @@ bool CConf::read()
 			  section = SECTION_LOG;
 		  else if (::strncmp(buffer, "[Network]", 9U) == 0)
 			  section = SECTION_NETWORK;
+		  else if (::strncmp(buffer, "[Telegram Bot]", 14U) == 0)
+			  section = SECTION_TELEGRAM;
 		  else
 			  section = SECTION_NONE;
 
@@ -132,7 +140,16 @@ bool CConf::read()
 			  m_networkPort = (unsigned short)::atoi(value);
 		  else if (::strcmp(key, "Debug") == 0)
 			  m_networkDebug = ::atoi(value) == 1;
-	  }
+	  } else if (section == SECTION_TELEGRAM) {
+		  if (::strcmp(key, "Enable") == 0)
+			  m_TelegramBotEnable = ::atoi(value) == 1;
+		  else if (::strcmp(key, "HTMLEnable") == 0)
+			  m_TelegramBotHTMLEnable = ::atoi(value) == 1;
+		  else if (::strcmp(key, "APIToken") == 0)
+			  m_TelegramBotAPIToken = value;
+		  else if (::strcmp(key, "ChannelId") == 0)
+			  m_TelegramBotChannelId = value;
+	  } 
   }
 
   ::fclose(fp);
@@ -189,3 +206,26 @@ bool CConf::getNetworkDebug() const
 {
 	return m_networkDebug;
 }
+
+bool CConf::getTelegramBotEnable() const
+{
+	return m_TelegramBotEnable;
+}
+
+bool CConf::getTelegramBotHTMLEnable() const
+{
+	return m_TelegramBotHTMLEnable;
+}
+
+
+std::string CConf::getTelegramBotAPIToken() const
+{
+  return m_TelegramBotAPIToken;
+}
+
+std::string CConf::getTelegramBotChannelId() const
+{
+  return m_TelegramBotChannelId;
+}
+
+
