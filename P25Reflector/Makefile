@@ -1,10 +1,10 @@
 CC      = cc
 CXX     = c++
 CFLAGS  = -g -O3 -Wall -DHAVE_LOG_H -DUDP_SOCKET_MAX=2 -std=c++0x -pthread
-LIBS    = -lpthread
-LDFLAGS = -g
+LIBS    = -lpthread -lcurl
+LDFLAGS = -g -lcurl
 
-OBJECTS = Conf.o DMRLookup.o Log.o Mutex.o Network.o P25Reflector.o StopWatch.o Thread.o Timer.o UDPSocket.o Utils.o
+OBJECTS = Conf.o DMRLookup.o Log.o Mutex.o Network.o P25Reflector.o StopWatch.o Thread.o Timer.o UDPSocket.o Utils.o Telegram.o
 
 all:		P25Reflector
 

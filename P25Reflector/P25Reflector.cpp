@@ -24,6 +24,7 @@
 #include "Thread.h"
 #include "Utils.h"
 #include "Log.h"
+#include "Telegram.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <WS2tcpip.h>
@@ -171,6 +172,13 @@ void CP25Reflector::run()
 	}
 #endif
 
+	CTelegram telbot;
+	if(m_conf.getTelegramBotEnable()) {
+		telbot.open(m_conf.getTelegramBotAPIToken(),m_conf.getTelegramBotChannelId(),m_conf.getTelegramBotHTMLEnable());
+	}
+
+
+
 	CNetwork network(m_conf.getNetworkPort(), m_conf.getNetworkDebug());
 
 	ret = network.open();
@@ -272,6 +280,10 @@ void CP25Reflector::run()
 
 						std::string callsign = lookup->find(srcId);
 						LogMessage("Transmission from %s at %s to %s%u", callsign.c_str(), current->m_callsign.c_str(), lcf == 0x00U ? "TG " : "", dstId);
+						if(m_conf.getTelegramBotEnable()) {
+
+							telbot.writeData(callsign, std::to_string(srcId), current->m_callsign);
+						}	
 					}
 
 					for (std::vector<CP25Repeater*>::const_iterator it = m_repeaters.begin(); it != m_repeaters.end(); ++it) {
@@ -325,6 +337,10 @@ void CP25Reflector::run()
 
 		if (ms < 5U)
 			CThread::sleep(5U);
+	}
+
+	if(m_conf.getTelegramBotEnable()) {
+	telbot.close();
 	}
 
 	network.close();
