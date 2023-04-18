@@ -54,9 +54,16 @@ bool CTelegram::writeData(const std::string &Call, const std::string &Id, const 
         	curl_easy_setopt(m_curl, CURLOPT_URL, (m_apitoken + "sendMessage?parse_mode=HTML&chat_id=" + m_channelid + "&text=Call: <a href=\"https://www.qrz.com/lookup/" + Call + "\"><b>" + Call + "</b></a> Id: " + Id + " Gateway: " + Gateway).c_str());
 	
 	}
-	curl_easy_perform(m_curl);
-	LogInfo("Writing Telegram Bot Information");
-	return 0;
+res = curl_easy_perform(m_curl);
+        if(res != CURLE_OK)
+        {
+                LogInfo("Telegram did not work %s" , curl_easy_strerror(res));
+        }
+        else
+        {
+        LogInfo("Writing Telegram Bot Information");
+}
+return 0;
 
 
 }
