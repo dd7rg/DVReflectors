@@ -71,8 +71,6 @@ bool CTelegram::writeData(const std::string &Call, const std::string &Id, const 
 	LogInfo("Writing Telegram Bot Information");
 	}
 	return 0;
-
-
 }
 
 void CTelegram::close()
