@@ -148,7 +148,7 @@ bool CDMRLookup::load()
 		char* p2 = ::strtok(NULL, " \t\r\n");
 		char* p3 = ::strtok(NULL, " \t\r\n");
 
-		if (p1 != NULL && p2 != NULL) {
+		if (p1 != NULL && p2 != NULL && p3 != NULL) {
 			unsigned int id = (unsigned int)::atoi(p1);
 			for (char* p = p2; *p != 0x00U; p++)
 				*p = ::toupper(*p);

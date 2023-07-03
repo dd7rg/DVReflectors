@@ -48,7 +48,8 @@ bool CTelegram::open( const std::string &APIToken, const std::string &Channelid,
 bool CTelegram::writeData(const std::string &Call, const std::string &Id, const std::string &Gateway)
 {
 	std::string url = m_apitoken + "sendMessage?chat_id=" + m_channelid + "&text=TTCall: " + Call + " Id: " + Id + " Gateway: " + Gateway;
-	std::string url_html = "\"" + m_apitoken + "sendMessage?parse_mode=HTML&chat_id=" + m_channelid + "&text=Call:%20<a%20href=\\\"https://www.qrz.com/lookup/" + Call + "/?timestamp\\\"><b>" + Call + "</b></a>%20Id:%20" + Id + "%20Gateway:%20\""; // + Gateway +"\"";
+	//std::string url_html = "\"" + m_apitoken + "sendMessage?parse_mode=HTML&chat_id=" + m_channelid + "&text=Call: <a href=\\\"https://www.qrz.com/lookup/" + Call + "/?timestamp\\\"><b>" + Call + "</b></a> Id: " + Id + " Gateway:\"";
+	std::string url_html = m_apitoken + "sendMessage?parse_mode=HTML&chat_id=" + m_channelid + "&text=Call: <a href=\"https://www.qrz.com/lookup/" + Call + "/?timestamp\"><b>" + Call + "</b></a> Id: " + Id + " Gateway:" + Gateway;
 
         if(!m_htmlenable) {
                 curl_easy_setopt(m_curl, CURLOPT_URL, url.c_str());
