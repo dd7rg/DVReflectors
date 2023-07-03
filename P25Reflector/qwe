@@ -1,0 +1,18 @@
+[General]
+Daemon=0
+
+[Id Lookup]
+Name=/usr/local/share/P25Reflector/DMRIds.dat
+Time=24
+
+[Log]
+# Logging levels, 0=No logging
+DisplayLevel=1
+FileLevel=1
+FilePath=/var/log/
+FileRoot=P25Reflector
+FileRotate=1
+
+[Network]
+Port=62070
+Debug=0

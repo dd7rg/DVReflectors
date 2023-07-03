@@ -10,6 +10,7 @@
     <tr>
       <th>Time (UTC)</th>
       <th>Callsign</th>
+      <th>Name</th>
       <th>Target</th>
       <th>Gateway</th>
       <th>Dur (s)</th>
@@ -25,6 +26,7 @@ for ($i = 0; $i < count($allHeard); $i++) {
 		echo"<td>$listElem[2]</td>";
 		echo"<td>$listElem[3]</td>";
 		echo"<td>$listElem[4]</td>";
+		echo"<td>$listElem[5]</td>";
 		echo"</tr>\n";
 	}
 

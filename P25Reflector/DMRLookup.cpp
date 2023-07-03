@@ -30,6 +30,7 @@ CThread(),
 m_filename(filename),
 m_reloadTime(reloadTime),
 m_table(),
+	m_table_name(),
 m_mutex(),
 m_stop(false)
 {
@@ -103,6 +104,28 @@ std::string CDMRLookup::find(unsigned int id)
 	return callsign;
 }
 
+std::string CDMRLookup::find_name(unsigned int id)
+{
+	std::string name;
+
+	if (id == 0xFFFFFFU)
+		return std::string("ALL");
+
+	m_mutex.lock();
+
+	try {
+		name = m_table_name.at(id);
+	} catch (...) {
+		char text[10U];
+		::sprintf(text, "%u", id);
+		name = std::string(text);
+	}
+
+	m_mutex.unlock();
+
+	return name;
+}
+
 bool CDMRLookup::load()
 {
 	FILE* fp = ::fopen(m_filename.c_str(), "rt");
@@ -123,6 +146,7 @@ bool CDMRLookup::load()
 
 		char* p1 = ::strtok(buffer, " \t\r\n");
 		char* p2 = ::strtok(NULL, " \t\r\n");
+		char* p3 = ::strtok(NULL, " \t\r\n");
 
 		if (p1 != NULL && p2 != NULL) {
 			unsigned int id = (unsigned int)::atoi(p1);
@@ -130,6 +154,7 @@ bool CDMRLookup::load()
 				*p = ::toupper(*p);
 
 			m_table[id] = std::string(p2);
+			m_table_name[id] = std::string(p3);
 		}
 	}
 

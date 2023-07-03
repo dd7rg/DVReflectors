@@ -36,6 +36,7 @@ CTelegram::~CTelegram()
 bool CTelegram::open( const std::string &APIToken, const std::string &Channelid, const bool &htmlenable)
 {
 	m_curl = curl_easy_init();
+	curl_easy_setopt(m_curl, CURLOPT_VERBOSE, 1L);
 	m_apitoken = APIToken;
 	m_channelid = Channelid;
 	m_htmlenable = htmlenable;
@@ -46,16 +47,29 @@ bool CTelegram::open( const std::string &APIToken, const std::string &Channelid,
 
 bool CTelegram::writeData(const std::string &Call, const std::string &Id, const std::string &Gateway)
 {
-	if(!m_htmlenable) {
-        	curl_easy_setopt(m_curl, CURLOPT_URL, (m_apitoken + "sendMessage?chat_id=" + m_channelid + "&text=TTCall: " + Call + " Id: " + Id + " Gateway: " + Gateway).c_str());
+	std::string url = m_apitoken + "sendMessage?chat_id=" + m_channelid + "&text=TTCall: " + Call + " Id: " + Id + " Gateway: " + Gateway;
+	std::string url_html = "\"" + m_apitoken + "sendMessage?parse_mode=HTML&chat_id=" + m_channelid + "&text=Call:%20<a%20href=\\\"https://www.qrz.com/lookup/" + Call + "/?timestamp\\\"><b>" + Call + "</b></a>%20Id:%20" + Id + "%20Gateway:%20\""; // + Gateway +"\"";
+
+        if(!m_htmlenable) {
+                curl_easy_setopt(m_curl, CURLOPT_URL, url.c_str());
+                LogInfo("URL for Telegram used: %s", url.c_str());
+        }
+        else
+        {
+                curl_easy_setopt(m_curl, CURLOPT_URL, url_html.c_str());
+                LogInfo("URL for Telegram used: %s", url_html.c_str());
+
+        }
+
+	res = curl_easy_perform(m_curl);
+	if(res != CURLE_OK)
+	{
+		LogInfo("Telegram did not work %s" , curl_easy_strerror(res));
 	}
 	else
 	{
-        	curl_easy_setopt(m_curl, CURLOPT_URL, (m_apitoken + "sendMessage?parse_mode=HTML&chat_id=" + m_channelid + "&text=Call: <a href=\"https://www.qrz.com/lookup/" + Call + "\"><b>" + Call + "</b></a> Id: " + Id + " Gateway: " + Gateway).c_str());
-	
-	}
-	curl_easy_perform(m_curl);
 	LogInfo("Writing Telegram Bot Information");
+	}
 	return 0;
 
 

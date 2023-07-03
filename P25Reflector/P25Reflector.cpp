@@ -279,7 +279,8 @@ void CP25Reflector::run()
 						displayed = true;
 
 						std::string callsign = lookup->find(srcId);
-						LogMessage("Transmission from %s at %s to %s%u", callsign.c_str(), current->m_callsign.c_str(), lcf == 0x00U ? "TG " : "", dstId);
+						std::string name = lookup->find_name(srcId);
+						LogMessage("Transmission from %s %s %6d at %s to %s%u", callsign.c_str(), name.c_str(), srcId, current->m_callsign.c_str(), lcf == 0x00U ? "TG " : "", dstId);
 						if(m_conf.getTelegramBotEnable()) {
 
 							telbot.writeData(callsign, std::to_string(srcId), current->m_callsign);

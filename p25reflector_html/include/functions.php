@@ -141,27 +141,57 @@ function getHeardList($logLines) {
 //0123456789012345678901234567890123456789012345678901234567890123456789
 //M: 2016-10-11 19:45:38.033 Transmission from DL5BQ at DL5BQ      to TG 10100
 
+//M: 2023-07-02 13:27:31.430 Transmission from DD7RG Ralf at DD7RG      to TG 8000
+	// rewrite to support names in logfile and use php  functions to split strings ...
+	// // DD7RG
+	// todo id ausgabe ins logfile vom reflector, damit auch die id sieht, es gibt ja callsigns mit mehreren ids ...
 	$heardList = array();
 	$dttxend = "";
+	$qwe= array();
 	foreach ($logLines as $logLine) {
+
+
+	$qwe = preg_split('/\s+/', $logLine); // split to any whitspace	
+		//$qwe = explode(' ', $logLine);
+		if($qwe[3] == "Transmission" && $qwe[4] == "from") {
+
+		$timestamp = $qwe[1] . ' '  . $qwe[2];
+
 		$duration = "transmitting";
-		$timestamp = substr($logLine, 3, 19);
+		//$timestamp = substr($logLine, 3, 19);
 		$dttimestamp = new DateTime($timestamp);
 		if ($dttxend !== "") {
 			$duration = $dttimestamp->diff($dttxend)->format("%s");
 		}
-		$callsign2 = substr($logLine, strpos($logLine,"from") + 5, strpos($logLine,"at") - strpos($logLine,"from") - 6);
-		$callsign = trim($callsign2);
-		$target = substr($logLine, strpos($logLine, "to") + 3); 
-		$gateway = trim(substr($logLine, strpos($logLine,"at") + 3, strpos($logLine,"to") - strpos($logLine,"at") - 4));
+		$callsign = $qwe[5];
+		//$callsign = "DD7RG";
+		$name = $qwe[6];
+		$id   = $qwe[7];
+		//$name = "Ralf";
+		$gateway = $qwe[9];
+		//$gateway = "DD8RY";
+		$target = $qwe[11] . $qwe[12];
+		//$target = "8000";
+
+		//$callsign2 = substr($logLine, strpos($logLine,"from") + 5, strpos($logLine,"at") - strpos($logLine,"from") - 6);
+		//$callsign = trim($callsign2);
+		//$qwe = explode(' ', $callsign);
+		//$callsign = $qwe[0];
+		//$name= $qwe[1];
+		//$target = substr($logLine, strpos($logLine, "to") + 3); 
+		//$gateway = trim(substr($logLine, strpos($logLine,"at") + 3, strpos($logLine,"to") - strpos($logLine,"at") - 4));
+		//
 		// Callsign or ID should be less than 11 chars long, otherwise it could be errorneous
 		if ( (strlen($callsign) < 11) && (strlen($callsign) > 0) ) {
-			array_push($heardList, array($timestamp, $callsign, $target, $gateway, $duration));
+			array_push($heardList, array($timestamp, $callsign, $name,$id,  $target, $gateway, $duration));
 		}
+		}
+		
 		if(strpos($logLine,"end of") || strpos($logLine,"watchdog has expired") || strpos($logLine,"ended RF data") || strpos($logLine,"ended network") || strpos($logLine,"end of transmission")) {
 			$txend = substr($logLine, 3, 19);
 			$dttxend = new DateTime($txend);
 		}
+		
 	}
 	return $heardList;
 }
@@ -173,8 +203,8 @@ function getLastHeard($logLines) {
 	$heardList = getHeardList($logLines);
 	$counter = 0;
 	foreach ($heardList as $listElem) {
-		if(!(array_search($listElem[1], $heardCalls) > -1)) {
-			array_push($heardCalls, $listElem[1]);
+		if(!(array_search($listElem[3], $heardCalls) > -1)) {
+			array_push($heardCalls, $listElem[3]); // 1 is name, 3 is id ...
 			array_push($lastHeard, $listElem);
 			$counter++;
 		}

@@ -41,6 +41,7 @@ private:
 	std::string m_channelid;
 	bool        m_htmlenable;
 	CURL*        m_curl;
+	CURLcode    res;
 };
 
 #endif
