@@ -50,7 +50,7 @@ include "version.php";
      <p class="h2 bg-danger">hosted on SERVER </p>
    </div>
     <div class="col-sm-3" >
-      <img src="OE9_p25.jpg" class="img-circle" width="200" alt="P25 Logo">
+      <img src="OE9_P25.jpg" class="img-circle" width="200" alt="P25 Logo">
 
    </div>
   </div>
