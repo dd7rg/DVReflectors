@@ -47,31 +47,48 @@ bool CTelegram::open( const std::string &APIToken, const std::string &Channelid,
 
 bool CTelegram::writeData(const std::string &Call, const std::string &Id, const std::string &Gateway)
 {
-	std::string url = m_apitoken + "sendMessage?chat_id=" + m_channelid + "&text=TTCall: " + Call + " Id: " + Id + " Gateway: " + Gateway;
-	//std::string url_html = "\"" + m_apitoken + "sendMessage?parse_mode=HTML&chat_id=" + m_channelid + "&text=Call: <a href=\\\"https://www.qrz.com/lookup/" + Call + "/?timestamp\\\"><b>" + Call + "</b></a> Id: " + Id + " Gateway:\"";
-	std::string url_html = m_apitoken + "sendMessage?parse_mode=HTML&chat_id=" + m_channelid + "&text=Call: <a href=\"https://www.qrz.com/lookup/" + Call + "/?timestamp\"><b>" + Call + "</b></a> Id: " + Id + " Gateway:" + Gateway;
+        struct curl_slist *slist1;
+        slist1 = NULL;
+        slist1 = curl_slist_append(slist1, "Content-Type: application/json");
+        curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, slist1);
+
+        std::string url = m_apitoken + "sendMessage";
+
+        char* channelid = curl_easy_escape(m_curl, m_channelid.c_str(),0);
+        std::string strtext;
+        std::string data;
 
         if(!m_htmlenable) {
-                curl_easy_setopt(m_curl, CURLOPT_URL, url.c_str());
-                LogInfo("URL for Telegram used: %s", url.c_str());
+                strtext = ("Call: " + Call + " Id: " + Id + " Gateway: " + Gateway);
+                data = "{\"chat_id\":\"" + std::string(channelid) +"\", \"text\":\"" + strtext +"\"}";
         }
         else
         {
-                curl_easy_setopt(m_curl, CURLOPT_URL, url_html.c_str());
-                LogInfo("URL for Telegram used: %s", url_html.c_str());
-
+                strtext = ("Call: <a href=\\\"https://www.qrz.com/lookup/" + Call + "\\\"><b>" + Call + "</b></a> Id: " + Id + " Gateway:" + Gateway);
+                data = "{ \"parse_mode\":\"HTML\",\"chat_id\":\"" + std::string(channelid) +"\", \"text\":\"" + strtext +"\"}";
         }
 
-	res = curl_easy_perform(m_curl);
-	if(res != CURLE_OK)
-	{
-		LogInfo("Telegram did not work %s" , curl_easy_strerror(res));
-	}
-	else
-	{
-	LogInfo("Writing Telegram Bot Information");
-	}
-	return 0;
+        curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, data.c_str());
+        curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, (long)strlen(data.c_str()));
+        curl_easy_setopt(m_curl, CURLOPT_URL, url.c_str());
+        //LogInfo("URL for Telegram used: %s Data: %s", url.c_str() , data.c_str());
+
+
+        res = curl_easy_perform(m_curl);
+        if(res != CURLE_OK)
+        {
+                LogInfo("Telegram did not work %s" , curl_easy_strerror(res));
+        }
+        else
+        {
+                LogInfo("Writing Telegram Bot Information");
+        }
+
+        curl_free(channelid);
+        curl_slist_free_all(slist1);
+        slist1 = NULL;
+
+        return 0;
 }
 
 void CTelegram::close()
