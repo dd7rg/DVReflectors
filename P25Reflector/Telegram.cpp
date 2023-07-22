@@ -65,7 +65,7 @@ bool CTelegram::writeData(const std::string &Call, const std::string &Id, const 
         else
         {
                 strtext = ("Call: <a href=\\\"https://www.qrz.com/lookup/" + Call + "\\\"><b>" + Call + "</b></a> Id: " + Id + " Gateway:" + Gateway);
-                data = "{ \"parse_mode\":\"HTML\",\"chat_id\":\"" + std::string(channelid) +"\", \"text\":\"" + strtext +"\"}";
+                data = "{ \"parse_mode\":\"HTML\",\"chat_id\":\"" + std::string(channelid) +"\", \"disable_web_page_preview\": true, \"text\":\"" + strtext +"\"}";
         }
 
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, data.c_str());
